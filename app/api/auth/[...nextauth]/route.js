@@ -1,3 +1,5 @@
+import connectToMongoDB from '@/lib/mongodb';
+import User from '@/models/user';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
 import NextAuth from "next-auth";
@@ -42,7 +44,44 @@ const handler = NextAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         })
     ],
-    adapter: PrismaAdapter(prisma),
+
+    callbacks: {
+        async signIn({ user, account }) {
+            console.log("user => ", user)
+            console.log("account => ", account)
+            if (account.provider === "google") {
+                const { name, email } = user;
+                try {
+                    await connectToMongoDB();
+                    const userExists = await User.findOne({ email });
+
+                    if (!userExists) {
+                        const res = await fetch("http://localhost:3000/api/user", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                name,
+                                email,
+                                password: account.access_token,
+                                loginType: "sso"
+                            }),
+                        });
+
+                        if (res.ok) {
+                            this.redirect('/pages/dashboard')
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            return user;
+        },
+    },
+    // adapter: PrismaAdapter(prisma),
 });
 
 export { handler as GET, handler as POST };
