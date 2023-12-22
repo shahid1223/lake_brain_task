@@ -10,40 +10,6 @@ const prisma = new PrismaClient();
 
 const handler = NextAuth({
     providers: [
-        CredentialsProvider({
-            credentials: {
-                username: { label: "Username", type: "text", placeholder: "jsmith" },
-                password: { label: "Password", type: "password" }
-            },
-            async authorize(credentials, req) {
-                if (!credentials?.email || !credentials.password) {
-                    return null;
-                }
-
-                const user = await User.findOne({ email: credentials.email });
-
-                console.log("user => ", user);
-
-                if (!userExists) {
-                    return "User not found";
-                }
-
-                const isMatch = await bcrypt.compare(password, userExists.password);
-                if (!isMatch) {
-                    return "Please provide correct credentials";
-                }
-
-            //    return this.redirect('/pages/dashboard')
-
-                return {
-                    id: user._id,
-                    email: user.email,
-                    name: user.name,
-                    randomKey: "Hey cool",
-                };
-
-            }
-        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -59,6 +25,8 @@ const handler = NextAuth({
                 try {
                     await connectToMongoDB();
                     const userExists = await User.findOne({ email });
+
+                    console.log("user => ", userExists)
 
                     if (!userExists) {
                         const res = await fetch("http://localhost:3000/api/user", {
