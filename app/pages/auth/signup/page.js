@@ -96,7 +96,7 @@ export default function Home() {
                         </div>
 
                         <div className='flex justify-center items-center'>
-                            <button type="submit" className='text-[#FFF] rounded-lg shadow-sm text-center bg-[#20DF7F] box-s text-[16px] font-medium leading-5 capitalize w-full h-[45px] flex-shrink-0'>Login</button>
+                            <button type="submit" className='text-[#FFF] rounded-lg shadow-sm text-center bg-[#20DF7F] box-s text-[16px] font-medium leading-5 capitalize w-full h-[45px] flex-shrink-0'>Sign Up</button>
                         </div>
                     </Form>
                 </Formik>
