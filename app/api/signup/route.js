@@ -30,16 +30,6 @@ export async function POST(request) {
         },
     };
 
-    jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" },
-        (err, token) => {
-            if (err) {
-                console.error("JWT signing error:", err);
-                return NextResponse.json({ message: "Error creating token" }, { status: 500 });
-            }
-            return NextResponse.json({ message: "User created successfully", user, token, code: 200 });
-        }
-    );
+    const token = jwt.sign(payload, "2454fsdf5ds4fsd4f5sd4f5d6", { expiresIn: "1h" })
+    return NextResponse.json({ message: "registered successfully", token, userExists, code: 200 }, { status: 200 });
 }

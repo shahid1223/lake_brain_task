@@ -20,18 +20,23 @@ const handler = NextAuth({
                     return null;
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: {
-                        email: credentials.email,
-                    },
-                });
+                const user = await User.findOne({ email: credentials.email });
 
-                if (!user || !(await compare(credentials.password, user.password))) {
-                    return null;
+                console.log("user => ", user);
+
+                if (!userExists) {
+                    return "User not found";
                 }
 
+                const isMatch = await bcrypt.compare(password, userExists.password);
+                if (!isMatch) {
+                    return "Please provide correct credentials";
+                }
+
+            //    return this.redirect('/pages/dashboard')
+
                 return {
-                    id: user.id,
+                    id: user._id,
                     email: user.email,
                     name: user.name,
                     randomKey: "Hey cool",
@@ -78,6 +83,32 @@ const handler = NextAuth({
                 }
             }
 
+            if (account.provider === "credentials") {
+                console.log("shahid => ", account)
+                const { email, password } = user;
+                // try {
+                //     const res = await fetch("http://localhost:3000/api/login", {
+                //         method: "POST",
+                //         headers: {
+                //             "Content-Type": "application/json",
+                //         },
+                //         body: JSON.stringify({
+                //             email,
+                //             password,
+                //             loginType: "normal"
+                //         }),
+                //     });
+
+                //     console.log("re", res)
+
+                //     if (res.ok) {
+                //         this.redirect('/pages/dashboard')
+                //     }
+
+                // } catch (error) {
+                //     console.log(error);
+                // }
+            }
             return user;
         },
     },
